@@ -1,33 +1,42 @@
 import { Controller, Body, Post, HttpCode, Get, Query, Delete, Put, Param, Req, Res, HttpStatus } from '@nestjs/common';
-import { CreateCatDto, ListAllEntities, UpdateCatDto } from './dto';
+import { CreateCatDto, ListAllEntities } from './dto/dto';
 import { Response, Request } from "express";
+import { CatsService } from './cats.service';
+import { Cat } from './interfaces/cat.interface';
 
 @Controller('cats')
 export class CatsController {
 
+    // CatsService is injected
+    constructor(private readonly catsService: CatsService) { }
+
     @Post()
-    async create(@Body() createCatDto: CreateCatDto): Promise<CreateCatDto> {
-        return createCatDto;
+    async create(@Body() createCatDto: CreateCatDto) {
+        this.catsService.create(createCatDto);
     }
 
     @Get()
-    async findAll(@Query() query: ListAllEntities): Promise<string> {
-        return `This action returns all cats (limit: ${query.limit} items)`;
+    async findAll(@Query() query: ListAllEntities): Promise<Cat[]> {
+        return this.catsService.findAll();
     }
 
-    // use express request and response here
     @Get(':id')
-    async findOne(@Req() req: Request, @Res() res: Response): Promise<any> {
-        res.status(HttpStatus.OK).send(`This action returns a #${req.params.id} cat`)
+    async findOne(@Param('id') id: number): Promise<Cat | {}> {
+        return this.catsService.findById(id)
     }
 
+    // use express request and response here so I can place my own http status code
     @Put(':id')
-    async update(@Param('id') id: string, @Body() updateCatDto: UpdateCatDto): Promise<any> {
-        return `This action updates a #${id} cat[${JSON.stringify(updateCatDto)}]`;
+    async update(@Req() req: Request, @Res() res: Response): Promise<any> {
+        let result: boolean = this.catsService.updateCat(req.params.id, req.body);
+        let httpCode: any = result ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+        res.status(httpCode).send();
     }
 
     @Delete(':id')
-    async remove(@Param('id') id: string): Promise<any> {
-        return `This action removes a #${id} cat`;
+    // I need my own HttpCode defined since delete does 200 OK by default.
+    @HttpCode(HttpStatus.NO_CONTENT)
+    async remove(@Param('id') id: number): Promise<any> {
+        this.catsService.remove(id);
     }
 }
