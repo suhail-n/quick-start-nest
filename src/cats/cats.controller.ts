@@ -1,4 +1,4 @@
-import { Controller, Body, Post, HttpCode, Get, Query, Delete, Put, Param, Req, Res, HttpStatus, BadRequestException, UseFilters } from '@nestjs/common';
+import { Controller, Body, Post, HttpCode, Get, Query, Delete, Put, Param, Req, Res, HttpStatus, BadRequestException, UseFilters, ConflictException } from '@nestjs/common';
 import { CreateCatDto, ListAllEntities } from './dto/dto';
 import { Response, Request } from "express";
 import { CatsService } from './cats.service';
@@ -7,6 +7,8 @@ import { Cat } from './interfaces/cat.interface';
 import { HttpExceptionFilter } from "../common/exception/http-exception.filter";
 
 @Controller('cats')
+// can also use Filter at controller level rather than method level
+@UseFilters(new HttpExceptionFilter())
 export class CatsController {
 
     // CatsService is injected
