@@ -21,8 +21,8 @@ export class AppModule implements NestModule {
       .exclude(
         // exlude these paths from the middleware
         { path: '/cats', method: RequestMethod.ALL },
-        { path: '/cats/:id', method: RequestMethod.PUT })
-        // target CatsController for middleware
+        { path: '/cats/:id', method: RequestMethod.GET })
+      // target CatsController for middleware
       .forRoutes(CatsController);
   }
 }
