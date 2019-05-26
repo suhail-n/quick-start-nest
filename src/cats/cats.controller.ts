@@ -1,4 +1,4 @@
-import { Controller, Body, Post, HttpCode, Get, Query, Delete, Put, Param, Req, Res, HttpStatus } from '@nestjs/common';
+import { Controller, Body, Post, HttpCode, Get, Query, Delete, Put, Param, Req, Res, HttpStatus, BadRequestException } from '@nestjs/common';
 import { CreateCatDto, ListAllEntities } from './dto/dto';
 import { Response, Request } from "express";
 import { CatsService } from './cats.service';
@@ -29,8 +29,11 @@ export class CatsController {
     @Put(':id')
     async update(@Req() req: Request, @Res() res: Response): Promise<any> {
         let result: boolean = this.catsService.updateCat(req.params.id, req.body);
-        let httpCode: any = result ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
-        res.status(httpCode).send();
+        if (result === false) {
+            // exception will return the Bad Request status code with the message added
+            throw new BadRequestException("ID Does not Exist");
+        }
+        res.status(HttpStatus.OK).send();
     }
 
     @Delete(':id')
