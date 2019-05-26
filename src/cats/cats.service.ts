@@ -16,7 +16,7 @@ export class CatsService {
         return this.cats;
     }
     updateCat(id: number, newCat: Cat): boolean {
-        if (this.cats.length < id) return false
+        if (this.cats.length === 0 || this.cats.length < id) return false
         let foundCat: Cat = this.cats[id]
         for (let key in newCat) {
             if (key) {
