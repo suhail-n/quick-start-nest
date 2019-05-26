@@ -1,8 +1,10 @@
-import { Controller, Body, Post, HttpCode, Get, Query, Delete, Put, Param, Req, Res, HttpStatus, BadRequestException } from '@nestjs/common';
+import { Controller, Body, Post, HttpCode, Get, Query, Delete, Put, Param, Req, Res, HttpStatus, BadRequestException, UseFilters } from '@nestjs/common';
 import { CreateCatDto, ListAllEntities } from './dto/dto';
 import { Response, Request } from "express";
 import { CatsService } from './cats.service';
 import { Cat } from './interfaces/cat.interface';
+// import must be relative path. Absoulte from src will fail
+import { HttpExceptionFilter } from "../common/exception/http-exception.filter";
 
 @Controller('cats')
 export class CatsController {
@@ -27,6 +29,8 @@ export class CatsController {
 
     // use express request and response here so I can place my own http status code
     @Put(':id')
+    // using custom exception filter
+    @UseFilters(new HttpExceptionFilter())
     async update(@Req() req: Request, @Res() res: Response): Promise<any> {
         let result: boolean = this.catsService.updateCat(req.params.id, req.body);
         if (result === false) {
