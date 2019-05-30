@@ -1,7 +1,17 @@
+import { IsString, IsInt, MinLength } from "class-validator";
+
 export class CreateCatDto {
-    readonly name!: string;
-    readonly age!: number;
-    readonly breed!: string;
+    @IsString()
+    @MinLength(4, {
+        message: "Title is too short. Minimal length is 4"
+    })
+    name!: string;
+
+    @IsInt()
+    age!: number;
+
+    @IsString()
+    breed!: string;
 }
 
 export class ListAllEntities {
