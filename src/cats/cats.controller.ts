@@ -1,12 +1,16 @@
-import { Controller, Body, Post, HttpCode, Get, Query, Delete, Put, Param, Req, Res, HttpStatus, BadRequestException, UseFilters, ConflictException, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Body, Post, HttpCode, Get, Query, Delete, Put, Param, Req, Res, HttpStatus, BadRequestException, UseFilters, ConflictException, UsePipes, ValidationPipe, UseGuards } from '@nestjs/common';
 import { CreateCatDto, ListAllEntities } from './dto/dto';
 import { Response, Request } from "express";
 import { CatsService } from './cats.service';
 import { Cat } from './interfaces/cat.interface';
 // import must be relative path. Absoulte from src will fail
 import { HttpExceptionFilter } from "../common/exception/http-exception.filter";
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
 
 @Controller('cats')
+// use the roles guard on each route
+@UseGuards(RolesGuard)
 // can also use Filter at controller level rather than method level
 // @UseFilters(new HttpExceptionFilter())
 export class CatsController {
@@ -16,6 +20,8 @@ export class CatsController {
     }
 
     @Post()
+    // set metadata to route handler for roles which can be seen in auth.gaurd
+    @Roles('admin')
     // can validate using use pipe
     // @UsePipes(new ValidationPipe())
     // can also validate by using the route param body
