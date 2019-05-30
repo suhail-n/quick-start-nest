@@ -1,4 +1,4 @@
-import { Controller, Body, Post, HttpCode, Get, Query, Delete, Put, Param, Req, Res, HttpStatus, BadRequestException, UseFilters, ConflictException } from '@nestjs/common';
+import { Controller, Body, Post, HttpCode, Get, Query, Delete, Put, Param, Req, Res, HttpStatus, BadRequestException, UseFilters, ConflictException, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CreateCatDto, ListAllEntities } from './dto/dto';
 import { Response, Request } from "express";
 import { CatsService } from './cats.service';
@@ -8,14 +8,19 @@ import { HttpExceptionFilter } from "../common/exception/http-exception.filter";
 
 @Controller('cats')
 // can also use Filter at controller level rather than method level
-@UseFilters(new HttpExceptionFilter())
+// @UseFilters(new HttpExceptionFilter())
 export class CatsController {
 
     // CatsService is injected
-    constructor(private readonly catsService: CatsService) { }
+    constructor(private readonly catsService: CatsService) {
+    }
 
     @Post()
-    async create(@Body() createCatDto: CreateCatDto) {
+    // can validate using use pipe
+    // @UsePipes(new ValidationPipe())
+    // can also validate by using the route param body
+    // this validation is a built in validation
+    async create(@Body(new ValidationPipe({ transform: true })) createCatDto: CreateCatDto) {
         this.catsService.create(createCatDto);
     }
 
